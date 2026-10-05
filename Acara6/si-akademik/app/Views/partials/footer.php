@@ -1,0 +1,7 @@
+<footer class="mt-5 py-3 text-center text-muted border-top">
+        &copy; 2026 SI Akademik - Politeknik Negeri Jember
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= BASE_PATH ?>/assets/js/app.js"></script>
+</body>
+</html>

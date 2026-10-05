@@ -1,0 +1,15 @@
+# Dependency vendor
+/vendor/
+
+# Log aplikasi
+/storage/logs/*.log
+
+# Konfigurasi lokal
+.env
+
+# File OS & editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

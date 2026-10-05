@@ -1,0 +1,5 @@
+RewriteEngine On
+
+# Best practice: folder di bawah ini tidak boleh diakses langsung dari browser.
+# Yang boleh diakses publik hanya isi folder public/.
+RewriteRule ^(app|config|routes|storage|vendor)/ - [F,L]

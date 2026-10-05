@@ -1,0 +1,17 @@
+{
+    "name": "polije/si-akademik",
+    "description": "SI Akademik - BKPM Workshop SI Web Server (TIF330805)",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.0"
+    },
+    "autoload": {
+        "classmap": [
+            "app/"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
