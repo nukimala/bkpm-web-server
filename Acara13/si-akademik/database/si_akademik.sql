@@ -1,10 +1,10 @@
 -- database/si_akademik.sql
 -- Membuat database, tabel, dan data awal SI Akademik.
 
-CREATE DATABASE IF NOT EXISTS si_akademik
+CREATE DATABASE IF NOT EXISTS si_akademik_a13
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_general_ci;
-USE si_akademik;
+USE si_akademik_a13;
 
 -- Tabel Prodi
 CREATE TABLE IF NOT EXISTS prodi (
