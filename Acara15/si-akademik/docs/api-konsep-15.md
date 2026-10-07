@@ -11,9 +11,54 @@ Jalankan Apache + MySQL (XAMPP), lalu coba dari terminal:
 ```bash
 curl http://localhost/si-akademik/public/api
 curl http://localhost/si-akademik/public/api/mahasiswa
+curl "http://localhost/si-akademik/public/api/mahasiswa?id=1"
 curl http://localhost/si-akademik/public/api/mahasiswa/2401001
 curl http://localhost/si-akademik/public/api/prodi
 curl http://localhost/si-akademik/public/api/matakuliah
+```
+
+Endpoint `GET /api/mahasiswa?id=1` mengambil satu mahasiswa berdasarkan ID
+primary key; endpoint `GET /api/mahasiswa/{nim}` mengambil berdasarkan NIM.
+
+### POST /api/mahasiswa
+
+Kirim body JSON (di Postman: Body → raw → JSON):
+
+```bash
+curl -X POST http://localhost/si-akademik/public/api/mahasiswa \
+  -H "Content-Type: application/json" \
+  -d '{"nim":"2501010","nama":"Dewi Lestari","prodi_id":1}'
+```
+
+Respons berhasil (HTTP 201 Created):
+
+```json
+{
+    "success": true,
+    "message": "Data mahasiswa berhasil ditambahkan",
+    "data": {
+        "id": 6,
+        "nim": "2501010",
+        "nama": "Dewi Lestari",
+        "prodi_id": 1,
+        "prodi": "Teknik Informatika",
+        "status": "aktif",
+        "alamat": "",
+        "angkatan": 2025
+    }
+}
+```
+
+Respons gagal (HTTP 400):
+
+```json
+{
+    "success": false,
+    "message": "Data tidak valid.",
+    "errors": {
+        "nim": "NIM sudah terdaftar."
+    }
+}
 ```
 
 ## 2. Contoh Respons JSON

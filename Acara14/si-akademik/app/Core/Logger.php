@@ -1,6 +1,6 @@
 <?php
 // app/Core/Logger.php
-// Logging sederhana ke file app/logs/*.log (Acara 14).
+// Logging sederhana ke file storage/logs/*.log (Acara 14).
 class Logger
 {
     private string $dir;
@@ -8,7 +8,7 @@ class Logger
 
     public function __construct(string $name = 'app')
     {
-        $this->dir = __DIR__ . '/../logs';
+        $this->dir = __DIR__ . '/../../storage/logs';
         $this->file = $this->dir . '/' . $name . '.log';
     }
 

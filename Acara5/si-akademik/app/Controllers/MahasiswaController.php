@@ -33,6 +33,23 @@ class MahasiswaController
         require __DIR__ . '/../Views/layouts/main.php';
     }
 
+    // Proses form tambah (POST). Belum ada database, jadi data hanya divalidasi
+    // lalu di-redirect kembali ke daftar mahasiswa (pola redirect Acara 5).
+    public function store(): void
+    {
+        $nim  = trim($_POST['nim'] ?? '');
+        $nama = trim($_POST['nama'] ?? '');
+
+        if ($nim === '' || $nama === '') {
+            header('Location: ' . BASE_PATH . '/mahasiswa/create');
+            exit; // penting! stop eksekusi agar kode di bawahnya tidak jalan
+        }
+
+        // Penyimpanan permanen ke database dibahas di Acara 7-8.
+        header('Location: ' . BASE_PATH . '/mahasiswa?saved=1');
+        exit;
+    }
+
     // Tugas Mandiri: /mahasiswa/{id} -> menampilkan detail mahasiswa berdasarkan id.
     public function show(int $id): void
     {

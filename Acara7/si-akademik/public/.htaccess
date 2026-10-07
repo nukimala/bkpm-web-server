@@ -1,3 +1,6 @@
 RewriteEngine On
-# Semua request diarahkan ke index.php (front controller)
-RewriteRule ^ index.php [L]
+# Jika yang diminta bukan file atau folder yang benar-benar ada,
+# serahkan ke index.php (front controller) dengan query string tetap dipertahankan (QSA).
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

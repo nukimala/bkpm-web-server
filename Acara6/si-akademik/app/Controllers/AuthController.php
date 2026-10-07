@@ -23,7 +23,7 @@ class AuthController extends Controller
 
         if ($username === self::VALID_USERNAME && $password === self::VALID_PASSWORD) {
             $_SESSION['user'] = $username;
-            self::setFlash('Selamat datang, ' . $username . '!');
+            self::setFlash('Selamat datang, Admin');
             $this->redirect('dashboard');
         }
 
@@ -38,7 +38,7 @@ class AuthController extends Controller
         session_destroy();
 
         session_start();
-        self::setFlash('Anda telah logout.');
+        self::setFlash('Anda telah logout');
 
         $this->redirect('login');
     }

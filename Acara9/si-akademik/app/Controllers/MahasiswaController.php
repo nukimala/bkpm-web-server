@@ -2,6 +2,7 @@
 // app/Controllers/MahasiswaController.php
 require_once __DIR__ . '/../Core/Controller.php';
 require_once __DIR__ . '/../Core/Database.php';
+require_once __DIR__ . '/../Models/Mahasiswa.php';
 require_once __DIR__ . '/../Repositories/MahasiswaRepository.php';
 require_once __DIR__ . '/../Repositories/ProdiRepository.php';
 require_once __DIR__ . '/../Core/Middleware/AuthMiddleware.php';
@@ -45,21 +46,31 @@ class MahasiswaController extends Controller
     {
         $data = $this->dataDariForm();
 
-        if ($data['nim'] === '' || $data['nama'] === '') {
-            $this->redirect('/mahasiswa/create', null, 'NIM dan nama wajib diisi.');
+        if ($data['prodi_id'] === 0 || $data['angkatan'] === 0) {
+            $this->redirect('/mahasiswa/create', null, 'Prodi dan angkatan wajib diisi.');
         }
-        if ($data['email'] === '' || $data['prodi_id'] === 0 || $data['angkatan'] === 0) {
-            $this->redirect('/mahasiswa/create', null, 'Email, prodi, dan angkatan wajib diisi.');
+        if ($data['email'] === '') {
+            $this->redirect('/mahasiswa/create', null, 'Email wajib diisi.');
         }
-        if (!ctype_digit($data['nim'])) {
-            $this->redirect('/mahasiswa/create', null, 'NIM harus berupa angka.');
-        }
-        if ($data['email'] !== '' && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $this->redirect('/mahasiswa/create', null, 'Format email tidak valid.');
+
+        // Validasi NIM, nama, email, dan status dijalankan oleh setter class Mahasiswa.
+        try {
+            $mhs = new Mahasiswa(
+                $data['nim'],
+                $data['nama'],
+                $data['email'],
+                '',
+                $data['status'],
+                0,
+                $data['prodi_id'],
+                $data['angkatan']
+            );
+        } catch (InvalidArgumentException $e) {
+            $this->redirect('/mahasiswa/create', null, $e->getMessage());
         }
 
         try {
-            $this->repo->create($data);
+            $this->repo->create($this->dariObject($mhs));
             $this->redirect('/mahasiswa', 'Data mahasiswa berhasil ditambahkan.');
         } catch (PDOException $e) {
             $this->redirect('/mahasiswa/create', null, 'Gagal menyimpan: ' . $this->pesanError($e));
@@ -95,15 +106,32 @@ class MahasiswaController extends Controller
         }
 
         $data = $this->dataDariForm();
-        if ($data['nim'] === '' || $data['nama'] === '' || $data['email'] === '') {
-            $this->redirect('/mahasiswa', null, 'NIM, nama, dan email wajib diisi.');
+
+        if ($data['prodi_id'] === 0 || $data['angkatan'] === 0) {
+            $this->redirect('/mahasiswa/edit/' . (int) $id, null, 'Prodi dan angkatan wajib diisi.');
         }
-        if ($data['email'] !== '' && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $this->redirect('/mahasiswa/edit/' . (int) $id, null, 'Format email tidak valid.');
+        if ($data['email'] === '') {
+            $this->redirect('/mahasiswa/edit/' . (int) $id, null, 'Email wajib diisi.');
+        }
+
+        // Validasi lewat setter class Mahasiswa (jalur tulis create/update).
+        try {
+            $mhs = new Mahasiswa(
+                $data['nim'],
+                $data['nama'],
+                $data['email'],
+                '',
+                $data['status'],
+                (int) $id,
+                $data['prodi_id'],
+                $data['angkatan']
+            );
+        } catch (InvalidArgumentException $e) {
+            $this->redirect('/mahasiswa/edit/' . (int) $id, null, $e->getMessage());
         }
 
         try {
-            $this->repo->update((int) $id, $data);
+            $this->repo->update((int) $id, $this->dariObject($mhs));
             $this->redirect('/mahasiswa', 'Data mahasiswa berhasil diperbarui.');
         } catch (PDOException $e) {
             $this->redirect('/mahasiswa/edit/' . (int) $id, null, 'Gagal memperbarui: ' . $this->pesanError($e));
@@ -133,6 +161,19 @@ class MahasiswaController extends Controller
             'prodi_id' => (int) ($_POST['prodi_id'] ?? 0),
             'angkatan' => (int) ($_POST['angkatan'] ?? 0),
             'status'   => $_POST['status'] ?? 'aktif',
+        ];
+    }
+
+    // Data untuk repository diambil dari object Mahasiswa yang sudah lolos validasi setter.
+    private function dariObject(Mahasiswa $mhs): array
+    {
+        return [
+            'nim'      => $mhs->getNim(),
+            'nama'     => $mhs->getNama(),
+            'email'    => $mhs->getEmail(),
+            'prodi_id' => $mhs->getProdiId(),
+            'angkatan' => $mhs->getAngkatan(),
+            'status'   => $mhs->getStatus(),
         ];
     }
 }

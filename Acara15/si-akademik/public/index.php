@@ -20,19 +20,36 @@ $uri = trim($uri, '/');
 if ($uri === 'api' || str_starts_with($uri, 'api/')) {
     require_once __DIR__ . '/../app/Core/ApiResponse.php';
     $apiRoutes = require __DIR__ . '/../routes/api.php';
+    $requestMethod = $_SERVER['REQUEST_METHOD'];
+    $pathFound = false;
 
     foreach ($apiRoutes as $route => $handler) {
-        $pattern = preg_replace('#\{([a-zA-Z0-9_]+)\}#', '(?P<$1>[a-zA-Z0-9_]+)', trim($route, '/'));
-        if (preg_match('#^' . $pattern . '$#', $uri, $m)) {
-            [$controllerName, $method] = explode('@', $handler);
-            $params = array_filter($m, function ($key) {
-                return !is_int($key);
-            }, ARRAY_FILTER_USE_KEY);
-
-            require_once __DIR__ . '/../app/Controllers/' . $controllerName . '.php';
-            $controller = new $controllerName();
-            $controller->$method(...array_values($params));
+        [$routeMethod, $routePath] = explode(' ', $route, 2);
+        $pattern = preg_replace('#\{([a-zA-Z0-9_]+)\}#', '(?P<$1>[a-zA-Z0-9_]+)', trim($routePath, '/'));
+        if (!preg_match('#^' . $pattern . '$#', $uri, $m)) {
+            continue;
         }
+
+        $pathFound = true;
+
+        // Path cocok tapi method salah -> lanjut cek route lain dulu (jangan langsung 405).
+        if ($routeMethod !== $requestMethod) {
+            continue;
+        }
+
+        [$controllerName, $method] = explode('@', $handler);
+        $params = array_filter($m, function ($key) {
+            return !is_int($key);
+        }, ARRAY_FILTER_USE_KEY);
+
+        require_once __DIR__ . '/../app/Controllers/' . $controllerName . '.php';
+        $controller = new $controllerName();
+        $controller->$method(...array_values($params));
+        exit;
+    }
+
+    if ($pathFound) {
+        ApiResponse::error('Metode ' . $requestMethod . ' tidak didukung untuk endpoint ini.', 405);
     }
 
     ApiResponse::error('Endpoint API tidak ditemukan.', 404);

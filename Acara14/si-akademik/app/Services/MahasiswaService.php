@@ -58,7 +58,7 @@ class MahasiswaService
     {
         $errors = $this->validator->validate($data, $this->rules());
 
-        if ($errors === [] && $this->repository->findByNim($data['nim'] ?? '')) {
+        if ($errors === [] && $this->repository->existsByNim($data['nim'] ?? '')) {
             $errors['nim'][] = 'NIM sudah terdaftar. Gunakan NIM lain.';
         }
 
@@ -74,8 +74,7 @@ class MahasiswaService
     {
         $errors = $this->validator->validate($data, $this->rules());
 
-        $existing = $this->repository->findByNim($data['nim'] ?? '');
-        if ($errors === [] && $existing !== null && $existing->getId() !== $id) {
+        if ($errors === [] && $this->repository->existsByNim($data['nim'] ?? '', $id)) {
             $errors['nim'][] = 'NIM sudah terdaftar untuk mahasiswa lain.';
         }
 

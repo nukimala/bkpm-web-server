@@ -9,5 +9,4 @@ Desktop.ini
 *.swp
 
 # Log aplikasi
-app/logs/*.log
-!app/logs/.gitkeep
+storage/logs/*.log

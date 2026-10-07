@@ -61,6 +61,22 @@ class MahasiswaRepository
         return $row ? $this->map($row) : null;
     }
 
+    // Acara 14: pengecekan NIM unik untuk validasi Service.
+    public function existsByNim(string $nim, int $ignoreId = 0): bool
+    {
+        $sql = 'SELECT COUNT(*) AS jumlah FROM mahasiswa WHERE nim = :nim';
+        if ($ignoreId > 0) {
+            $sql .= ' AND id != :id';
+        }
+        $stmt = $this->pdo()->prepare($sql);
+        $params = ['nim' => $nim];
+        if ($ignoreId > 0) {
+            $params['id'] = $ignoreId;
+        }
+        $stmt->execute($params);
+        return (int)$stmt->fetch()['jumlah'] > 0;
+    }
+
     // Pencarian dengan LIKE menggunakan prepared statement.
     public function search(string $keyword): array
     {

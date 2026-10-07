@@ -3,6 +3,7 @@
 // Controller tipis: memanggil Service Layer, lalu memutuskan arah halaman (PRG) (Acara 13).
 require_once __DIR__ . '/../Core/Controller.php';
 require_once __DIR__ . '/../Core/Session.php';
+require_once __DIR__ . '/../Core/Logger.php';
 require_once __DIR__ . '/../Services/MahasiswaService.php';
 require_once __DIR__ . '/../Core/Middleware/AuthMiddleware.php';
 
@@ -37,7 +38,13 @@ class MahasiswaController extends Controller
     {
         $this->onlyPost('/mahasiswa');
         $this->verifyCsrf();
-        $result = $this->service->create($_POST);
+
+        try {
+            $result = $this->service->create($_POST);
+        } catch (Throwable $e) {
+            (new Logger())->error('CREATE mahasiswa: ' . $e->getMessage());
+            $this->redirect('/mahasiswa', 'Data gagal disimpan.');
+        }
 
         if ($result['ok']) {
             $this->redirect('/mahasiswa', 'Data mahasiswa berhasil ditambahkan.');
@@ -72,7 +79,13 @@ class MahasiswaController extends Controller
     {
         $this->onlyPost('/mahasiswa');
         $this->verifyCsrf();
-        $result = $this->service->update($id, $_POST);
+
+        try {
+            $result = $this->service->update($id, $_POST);
+        } catch (Throwable $e) {
+            (new Logger())->error('UPDATE mahasiswa id=' . $id . ': ' . $e->getMessage());
+            $this->redirect('/mahasiswa', 'Data gagal disimpan.');
+        }
 
         if ($result['ok']) {
             $this->redirect('/mahasiswa', 'Data mahasiswa berhasil diperbarui.');
@@ -87,7 +100,13 @@ class MahasiswaController extends Controller
     {
         $this->onlyPost('/mahasiswa');
         $this->verifyCsrf();
-        $result = $this->service->delete($id);
+
+        try {
+            $result = $this->service->delete($id);
+        } catch (Throwable $e) {
+            (new Logger())->error('DELETE mahasiswa id=' . $id . ': ' . $e->getMessage());
+            $this->redirect('/mahasiswa', 'Data gagal dihapus.');
+        }
 
         $message = $result['ok']
             ? 'Data mahasiswa berhasil dihapus.'

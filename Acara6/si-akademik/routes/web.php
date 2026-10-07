@@ -4,7 +4,7 @@ return [
     ''                 => 'HomeController@index',
     'beranda'          => 'HomeController@index',
     'login'            => 'AuthController@loginForm',
-    'auth'             => 'AuthController@login',
+    'auth'             => ['handler' => 'AuthController@login', 'method' => 'POST'],
     'logout'           => 'AuthController@logout',
 
     'dashboard'        => ['handler' => 'DashboardController@index', 'middleware' => ['AuthMiddleware']],

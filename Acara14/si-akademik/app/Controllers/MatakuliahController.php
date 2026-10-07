@@ -3,6 +3,7 @@
 // Controller tipis: memanggil Service Layer (Acara 13).
 require_once __DIR__ . '/../Core/Controller.php';
 require_once __DIR__ . '/../Core/Session.php';
+require_once __DIR__ . '/../Core/Logger.php';
 require_once __DIR__ . '/../Services/MatakuliahService.php';
 require_once __DIR__ . '/../Core/Middleware/AuthMiddleware.php';
 
@@ -30,7 +31,13 @@ class MatakuliahController extends Controller
     {
         $this->onlyPost('/matakuliah');
         $this->verifyCsrf();
-        $result = $this->service->create($_POST);
+
+        try {
+            $result = $this->service->create($_POST);
+        } catch (Throwable $e) {
+            (new Logger())->error('CREATE matakuliah: ' . $e->getMessage());
+            $this->redirect('/matakuliah', 'Data gagal disimpan.');
+        }
 
         if ($result['ok']) {
             $this->redirect('/matakuliah', 'Data matakuliah berhasil ditambahkan.');
@@ -55,7 +62,13 @@ class MatakuliahController extends Controller
     {
         $this->onlyPost('/matakuliah');
         $this->verifyCsrf();
-        $result = $this->service->update($id, $_POST);
+
+        try {
+            $result = $this->service->update($id, $_POST);
+        } catch (Throwable $e) {
+            (new Logger())->error('UPDATE matakuliah id=' . $id . ': ' . $e->getMessage());
+            $this->redirect('/matakuliah', 'Data gagal disimpan.');
+        }
 
         if ($result['ok']) {
             $this->redirect('/matakuliah', 'Data matakuliah berhasil diperbarui.');
@@ -70,7 +83,13 @@ class MatakuliahController extends Controller
     {
         $this->onlyPost('/matakuliah');
         $this->verifyCsrf();
-        $result = $this->service->delete($id);
+
+        try {
+            $result = $this->service->delete($id);
+        } catch (Throwable $e) {
+            (new Logger())->error('DELETE matakuliah id=' . $id . ': ' . $e->getMessage());
+            $this->redirect('/matakuliah', 'Data gagal dihapus.');
+        }
 
         $message = $result['ok']
             ? 'Data matakuliah berhasil dihapus.'

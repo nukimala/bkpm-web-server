@@ -20,7 +20,10 @@ class ExceptionHandler
         if (!(error_reporting() & $severity)) {
             return false;
         }
-        throw new AppException(htmlspecialchars($message));
+
+        // Detail teknis hanya dicatat ke log, tidak ditampilkan ke pengguna.
+        (new Logger())->error(sprintf('PHP ERROR: %s in %s:%d', $message, $file, $line));
+        throw new AppException('Terjadi kesalahan pada server. Silakan coba lagi.');
     }
 
     public static function handleException(Throwable $e): void
@@ -37,6 +40,12 @@ class ExceptionHandler
         $status = ($e instanceof AppException) ? $e->getStatusCode() : 500;
         http_response_code($status);
 
+        // Pesan aman untuk pengguna: AppException sengaja dibuat dengan pesan ramah,
+        // selain itu (mis. PDOException) hanya pesan generik — detail ada di storage/logs/app.log.
+        $safeMessage = ($e instanceof AppException)
+            ? $e->getMessage()
+            : 'Terjadi kesalahan pada server. Silakan coba lagi.';
+
         header('Content-Type: text/html; charset=UTF-8');
         echo '<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Error</title>'
             . '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">'
@@ -44,7 +53,7 @@ class ExceptionHandler
             . '<div class="container py-5" style="max-width:560px;">'
             . '<div class="card shadow-sm"><div class="card-body text-center p-5">'
             . '<h1 class="display-6 text-danger">Terjadi Kesalahan</h1>'
-            . '<p class="mt-3 mb-0">' . htmlspecialchars($e->getMessage()) . '</p>'
+            . '<p class="mt-3 mb-0">' . htmlspecialchars($safeMessage) . '</p>'
             . '<a href="' . BASE_PATH . '/" class="btn btn-primary mt-4">Kembali ke Beranda</a>'
             . '</div></div></div></body></html>';
     }
