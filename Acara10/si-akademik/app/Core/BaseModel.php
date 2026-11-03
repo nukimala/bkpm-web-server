@@ -1,5 +1,4 @@
 <?php
-// app/Core/BaseModel.php
 abstract class BaseModel
 {
     protected PDO $pdo;

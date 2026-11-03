@@ -1,0 +1,3 @@
+RewriteEngine On
+# Semua request diarahkan ke index.php (front controller)
+RewriteRule ^ index.php [L]
