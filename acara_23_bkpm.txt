@@ -1,0 +1,304 @@
+--- Page 1 ---
+BKPM - WORKSHOP SI WEB SERVER (TIF330805) 
+ 
+146 
+ 
+Acara 23 
+Pokok Bahasan  
+: Manual testing dan Blackbox testing 
+Acara Praktikum/Praktik 
+: Minggu 12  / Pertemuan 1  
+Tempat 
+: Politeknik Negeri Jember 
+Alokasi Waktu 
+: 2 x 170 Menit  
+ 
+a. Capaian Pembelajaran Mata Kuliah (CPMK)  
+• 
+Mahasiswa mampu menguasai konsep dan penerapan pemrograman web sisi 
+server untuk membangun layanan API RESTful, termasuk pengelolaan routing, 
+request, response, serta dokumentasi menggunakan Swagger/Postman. 
+b. Penilaian Bertahap BNSP ( Skill Passport ) 
+Skema Sertifikasi 
+: Pengembang Web/Web Developer (SKM-496-028) 
+No 
+Kode Unit 
+Nama Unit Kompetensi 
+Elemen Kompetensi 
+1 
+J.620100.036.01 Melaksanakan 
+pengujian 
+kode 
+program secara statis  
+• Mempersiapkan 
+dokumentasi peralatan dan 
+lingkungan pengujian statis 
+• Membuat 
+program 
+driver 
+test/stub  
+• Melaksanakan pengujian 
+• Mengukur 
+aplikasi 
+ketika 
+stress test dijalankan 
+• Menganalisis data pengujian 
+• Melaporkan 
+dokumentasi 
+pengujian 
+2 
+J.620100.044.01 Menerapkan 
+Alert 
+Notification Jika 
+Aplikasi Bermasalah 
+• Analisis permasalahan yang 
+memerlukan tindakan cepat 
+• Menentukan 
+mekanisme 
+notification sewaktu timbul 
+suatu permasalahan   
+• Menjalankan 
+mekanisme 
+graceful failure jika terjadi 
+permasalahan   
+3 
+J.620100.045.01 Melakukan 
+Pemantauan Resource 
+yang 
+Digunakan 
+Aplikasi 
+• Analisis 
+resources 
+yang 
+kritikal 
+yang 
+diperlukan 
+aplikasi 
+• Membuat modul visualisasi 
+penggunaan resources 
+
+--- Page 2 ---
+BKPM - WORKSHOP SI WEB SERVER (TIF330805) 
+ 
+147 
+ 
+4 
+J.620100.047.01 Melakukan 
+Pembaharuan 
+Perangkat Lunak 
+• Menganalisis 
+diferensiasi 
+perangkat 
+lunak 
+yang 
+terbaru 
+dengan 
+yang 
+existing  
+• Membuat pogram perangkat 
+lunak 
+penambahan 
+diferensiasi 
+ 
+c. Indikator Penilaian  
+• 
+Ketepatan dalam mengimplementasikan integrasi API dengan front end sesuai 
+studi kasus dengan tema smart village. 
+d. Dasar Teori  
+Konsep Pengujian Perangkat Lunak dan Manual Testing 
+Pengujian (testing) adalah proses eksekusi program dengan tujuan 
+menemukan kesalahan (bug) serta memastikan perangkat lunak berjalan sesuai 
+spesifikasi yang telah ditentukan. Manual testing dilakukan oleh penguji secara 
+langsung tanpa bantuan skrip otomatis, sehingga sangat sesuai diterapkan pada 
+skala proyek workshop menggunakan alat bantu seperti Postman. 
+ 
+Blackbox Testing 
+Blackbox testing merupakan metode pengujian yang berfokus pada 
+fungsionalitas sistem tanpa memerlukan pengetahuan mengenai struktur kode 
+internal. Penguji hanya perlu memberikan data masukan (input) dan mengamati 
+apakah keluaran (output) sesuai dengan hasil yang diharapkan, menjadikan 
+metode ini populer digunakan untuk menguji aplikasi maupun API berbasis web 
+pada berbagai penelitian sistem informasi. 
+ 
+Teknik Equivalence Partitioning 
+Equivalence Partitioning adalah teknik pada blackbox testing yang membagi 
+domain data masukan ke dalam beberapa partisi/kelas ekuivalen, yaitu partisi valid 
+dan partisi tidak valid, sehingga pengujian cukup dilakukan pada satu perwakilan 
+data dari tiap partisi tanpa harus menguji seluruh kemungkinan kombinasi data, 
+sehingga proses pengujian menjadi lebih efisien namun tetap representatif. 
+ 
+Penyusunan Test Case 
+Test case yang baik umumnya memuat kolom: ID Test Case, Skenario Pengujian, 
+Data Uji, Hasil yang Diharapkan, Hasil Aktual, dan Status (Pass/Fail). Struktur ini 
+
+--- Page 3 ---
+BKPM - WORKSHOP SI WEB SERVER (TIF330805) 
+ 
+148 
+ 
+memudahkan pelacakan (traceability) antara kebutuhan sistem dan bukti 
+pengujian yang telah dilakukan. 
+ 
+e. Alat dan Bahan 
+• 
+Client Server: XAMPP, PHP, MySQL 
+• 
+Text Editor: Visual Code 
+• 
+Management Storage: Git dan Github 
+• 
+Web Browser 
+f. Prosedur Kerja  
+Pengujian dilakukan menyeluruh terhadap seluruh Controller yang dibangun 
+sejak acara 17 hingga 20 (AuthController dan MahasiswaController). 
+ 
+Langkah 1 — Menentukan Ruang Lingkup Pengujian 
+1. Susun daftar endpoint yang diuji berdasarkan peta Router: /register, /login, 
+dan /mahasiswa (GET, POST, PUT, DELETE). 
+ 
+Langkah 2 — Merancang Test Case dengan Equivalence Partitioning 
+ID 
+Skenario 
+Data Uji 
+Hasil Diharapkan 
+TC-
+01 
+NIM valid dan lengkap 
+(MahasiswaController::store) 
+nim=220100123 
+201 Created 
+TC-
+02 
+NIM kosong (partisi tidak 
+valid) 
+nim="" 
+400/422 
+TC-
+03 
+NIM duplikat (partisi tidak 
+valid) 
+nim milik data lain 
+422 Unprocessable 
+TC-
+04 
+Login kredensial benar 
+(AuthController::login) 
+username & 
+password benar 
+200 OK, token 
+diterima 
+TC-
+05 
+Login kredensial salah 
+password salah 
+401 Unauthorized 
+TC-
+06 
+Akses store tanpa token 
+(Auth::requireAuth) 
+tanpa header 
+Authorization 
+401 Unauthorized 
+ 
+Langkah 3 — Melakukan Eksekusi Pengujian Manual 
+1. Jalankan setiap test case menggunakan Postman sesuai skenario pada tabel 
+test case. 
+2. Catat hasil aktual beserta kode status HTTP yang benar-benar diterima. 
+ 
+Langkah 4 — Menyusun Laporan Hasil Pengujian 
+Bandingkan hasil aktual dengan hasil yang diharapkan, tentukan status 
+Pass/Fail, simpan sebagai docs/TEST_CASE.md. 
+
+--- Page 4 ---
+BKPM - WORKSHOP SI WEB SERVER (TIF330805) 
+ 
+149 
+ 
+ 
+Tugas Praktik Mandiri 
+1. Tambahkan minimal 5 test case baru untuk MahasiswaController::update dan 
+::destroy menggunakan equivalence partitioning. 
+2. Jika ditemukan status Fail, lakukan perbaikan pada lapisan Model/Controller 
+yang relevan dan lakukan retest. 
+ 
+g. Hasil dan Pembahasan 
+Format Laporan 
+• 
+Kertas A4  
+• 
+Format *.pdf 
+• 
+Struktur Laporan: Cover, Pendahuluan, Hasil Praktik, Kesimpulan dan Daftar 
+Pustaka 
+• 
+Berikan Identitas Diri: NIM, Nama, Golongan, Tugas Minggu Ke-X 
+• 
+Penamaan File: ACARA-X_GOL_NIM_NAMA.pdf  
+     Contoh: ACARA-1_A_E1234356_RADITYA.pdf 
+Kumpulkan pada https://slearn-jti.com/  
+ 
+h. Rubrik Penilaian 
+Item 
+Penilaian 
+Kriteria Penilaian 
+Bobot 
+Penilaian 
+Penilaian 
+Keaktifan 
+Aktif melakukan praktik pengembangan API, 
+pengujian 
+menggunakan 
+Postman, 
+dan 
+diskusi pemecahan masalah. 
+10% 
+ 
+Kecakapan 
+Pembelajaran 
+Mampu membangun REST API, mengelola 
+routing, request-response, autentikasi, serta 
+dokumentasi 
+menggunakan 
+Swagger/Postman. 
+10% 
+ 
+Literasi 
+Menggunakan dokumentasi REST API, Laravel 
+API, OpenAPI/Swagger, dan sumber ilmiah 
+terkait layanan web. 
+10% 
+ 
+Produk 
+Mengembangkan REST API yang berjalan 
+sesuai 
+spesifikasi, 
+aman, 
+dan 
+mampu 
+menangani kesalahan (error handling). 
+40% 
+ 
+Laporan 
+Menyusun 
+laporan 
+berisi 
+dokumentasi 
+endpoint REST API, hasil pengujian, analisis 
+respons API, dan evaluasi layanan. 
+10% 
+ 
+Presentasi 
+Mendemonstrasikan penggunaan REST API 
+beserta 
+dokumentasinya 
+serta 
+mampu 
+menjelaskan alur komunikasi client-server. 
+20% 
+ 
+Total 
+ 
+100% 
+ 
+ 
+ 

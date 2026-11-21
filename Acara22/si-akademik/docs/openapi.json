@@ -1,0 +1,779 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Sistem Informasi Akademik (SI-Akademik)",
+    "description": "Spesifikasi OpenAPI 3.0.0 resmi untuk RESTful API Sistem Informasi Akademik.\nMendukung operasi CRUD untuk entitas Mahasiswa, Program Studi, dan Mata Kuliah,\ndilengkapi autentikasi token Bearer dan penanganan error standar.\n",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost/webserver/Acara22/si-akademik/public",
+      "description": "Server Lokal Praktikum"
+    },
+    {
+      "url": "http://localhost/si-akademik/public",
+      "description": "Virtual Host / Root URL"
+    }
+  ],
+  "paths": {
+    "/api": {
+      "get": {
+        "summary": "Katalog dan Metadata API (ApiController::info)",
+        "description": "Mengembalikan nama aplikasi, versi, dan direktori endpoint yang tersedia.",
+        "responses": {
+          "200": {
+            "description": "Informasi API berhasil diambil.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Autentikasi Pengguna & Penerbitan Token (AuthApiController::login)",
+        "description": "Memverifikasi username dan password, mengembalikan token Bearer 64-karakter hex.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "admin"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "admin123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login berhasil, token diterbitkan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginSuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Kredensial tidak valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Input tidak lengkap (username/password kosong).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "Logout Pengguna / Pencabutan Token (AuthApiController::logout)",
+        "description": "Menghapus token dari tabel api_tokens agar tidak dapat digunakan lagi.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout berhasil.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mahasiswa": {
+      "get": {
+        "summary": "Daftar Mahasiswa (MahasiswaApiController::index)",
+        "description": "Mengambil seluruh record mahasiswa dengan opsional query pencarian nama/NIM.",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Kata kunci pencarian berdasarkan nama atau NIM.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data mahasiswa berhasil diambil.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data mahasiswa berhasil diambil."
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Mahasiswa"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Tambah Mahasiswa Baru (MahasiswaApiController::store)",
+        "description": "Menambahkan mahasiswa baru dengan validasi NIM unik, nama, status, dan prodi_id.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MahasiswaInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mahasiswa berhasil dibuat.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Token tidak diberikan atau salah.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validasi gagal (misal NIM duplikat atau kolom wajib kosong).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mahasiswa/{id}": {
+      "get": {
+        "summary": "Detail Mahasiswa (MahasiswaApiController::show)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mahasiswa ditemukan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Mahasiswa"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data mahasiswa tidak ditemukan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Perbarui Data Mahasiswa (MahasiswaApiController::update)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MahasiswaInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mahasiswa berhasil diperbarui.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Mahasiswa tidak ditemukan."
+          },
+          "422": {
+            "description": "Validasi gagal."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Hapus Mahasiswa (MahasiswaApiController::delete)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content - Record berhasil dihapus."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Record tidak ditemukan."
+          }
+        }
+      }
+    },
+    "/api/prodi": {
+      "get": {
+        "summary": "Daftar Program Studi (ProdiApiController::index)",
+        "responses": {
+          "200": {
+            "description": "Data prodi berhasil diambil."
+          }
+        }
+      },
+      "post": {
+        "summary": "Tambah Program Studi (ProdiApiController::store)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdiInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Prodi berhasil ditambahkan."
+          }
+        }
+      }
+    },
+    "/api/prodi/{id}": {
+      "get": {
+        "summary": "Detail Program Studi (ProdiApiController::show)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prodi ditemukan."
+          },
+          "404": {
+            "description": "Prodi tidak ditemukan."
+          }
+        }
+      },
+      "put": {
+        "summary": "Perbarui Program Studi (ProdiApiController::update)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdiInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prodi berhasil diperbarui."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Hapus Program Studi (ProdiApiController::delete)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Record prodi berhasil dihapus."
+          },
+          "422": {
+            "description": "Gagal dihapus karena masih ada mahasiswa yang terdaftar pada prodi ini."
+          }
+        }
+      }
+    },
+    "/api/matakuliah": {
+      "get": {
+        "summary": "Daftar Mata Kuliah (MatakuliahApiController::index)",
+        "responses": {
+          "200": {
+            "description": "Daftar mata kuliah berhasil diambil."
+          }
+        }
+      },
+      "post": {
+        "summary": "Tambah Mata Kuliah (MatakuliahApiController::store)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatakuliahInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mata kuliah berhasil ditambahkan."
+          }
+        }
+      }
+    },
+    "/api/matakuliah/{id}": {
+      "get": {
+        "summary": "Detail Mata Kuliah (MatakuliahApiController::show)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mata kuliah ditemukan."
+          }
+        }
+      },
+      "put": {
+        "summary": "Perbarui Mata Kuliah (MatakuliahApiController::update)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatakuliahInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mata kuliah berhasil diperbarui."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Hapus Mata Kuliah (MatakuliahApiController::delete)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Mata kuliah berhasil dihapus."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Hex-64-Token",
+        "description": "Masukkan token otentikasi hasil pemanggilan /api/auth/login."
+      }
+    },
+    "schemas": {
+      "Mahasiswa": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nim": {
+            "type": "string",
+            "example": "2401001"
+          },
+          "nama": {
+            "type": "string",
+            "example": "Budi Santoso"
+          },
+          "prodi_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "prodi_nama": {
+            "type": "string",
+            "example": "Teknik Informatika"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "aktif",
+              "nonaktif"
+            ],
+            "example": "aktif"
+          },
+          "alamat": {
+            "type": "string",
+            "example": "Jl. Mastrip No. 12, Jember"
+          }
+        }
+      },
+      "MahasiswaInput": {
+        "type": "object",
+        "required": [
+          "nim",
+          "nama",
+          "prodi_id",
+          "status"
+        ],
+        "properties": {
+          "nim": {
+            "type": "string",
+            "example": "2601001"
+          },
+          "nama": {
+            "type": "string",
+            "example": "Fitri Handayani"
+          },
+          "prodi_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "aktif",
+              "nonaktif"
+            ],
+            "example": "aktif"
+          },
+          "alamat": {
+            "type": "string",
+            "example": "Jl. Kalimantan No. 88, Jember"
+          }
+        }
+      },
+      "ProdiInput": {
+        "type": "object",
+        "required": [
+          "kode",
+          "nama"
+        ],
+        "properties": {
+          "kode": {
+            "type": "string",
+            "example": "TI"
+          },
+          "nama": {
+            "type": "string",
+            "example": "Teknik Informatika"
+          },
+          "ka_prodi": {
+            "type": "string",
+            "example": "Bpk. Muhammad Soleh, S.Kom., M.Cs."
+          }
+        }
+      },
+      "MatakuliahInput": {
+        "type": "object",
+        "required": [
+          "kode",
+          "nama",
+          "sks"
+        ],
+        "properties": {
+          "kode": {
+            "type": "string",
+            "example": "TIF330805"
+          },
+          "nama": {
+            "type": "string",
+            "example": "Workshop Sistem Web Server"
+          },
+          "sks": {
+            "type": "integer",
+            "example": 3
+          }
+        }
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Operasi berhasil."
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "LoginSuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Login berhasil."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string",
+                "example": "8f7e3c4a...64_hex..."
+              },
+              "type": {
+                "type": "string",
+                "example": "Bearer"
+              },
+              "expires_at": {
+                "type": "string",
+                "example": "2026-11-21 18:00:00"
+              },
+              "user": {
+                "type": "string",
+                "example": "admin"
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Endpoint atau data tidak ditemukan."
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Data mahasiswa gagal divalidasi."
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

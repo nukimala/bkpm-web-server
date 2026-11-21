@@ -1,0 +1,21 @@
+<?php
+// app/Core/Middleware/AuthMiddleware.php
+// Cek apakah user sudah login sebelum mengakses halaman yang dilindungi.
+class AuthMiddleware
+{
+    public static function isLoggedIn(): bool
+    {
+        return isset($_SESSION['user']) && $_SESSION['user'] !== '';
+    }
+
+    public static function requireLogin(string $base_path, bool $flashIfNotLogged = true): void
+    {
+        if (!self::isLoggedIn()) {
+            if ($flashIfNotLogged) {
+                $_SESSION['flash'] = 'Silakan login terlebih dahulu.';
+            }
+            header('Location: ' . $base_path . '/login');
+            exit;
+        }
+    }
+}

@@ -1,0 +1,13 @@
+# Sistem operasi
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Log aplikasi
+app/logs/*.log
+!app/logs/.gitkeep

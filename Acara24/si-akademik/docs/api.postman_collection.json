@@ -1,0 +1,403 @@
+{
+    "info": {
+        "_postman_id": "a1b2c3d4-1111-4444-8888-siakademikapipostman",
+        "name": "SI Akademik API",
+        "description": "Koleksi endpoint API REST project SI Akademik (Acara 15-19). Login terlebih dahulu untuk mendapatkan token yang tersimpan otomatis pada variabel {{auth_token}}.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Autentikasi",
+            "item": [
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test(\"login sukses dan token tersimpan\", function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json.success).to.eql(true);",
+                                    "    pm.collectionVariables.set(\"auth_token\", json.data.token);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    },
+                    "response": [
+                        {
+                            "name": "Login sukses",
+                            "originalRequest": {
+                                "method": "POST",
+                                "url": "{{base_url}}/api/auth/login"
+                            },
+                            "status": "Created",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Login berhasil.\",\n    \"data\": {\n        \"token\": \"...64 karakter hex...\",\n        \"type\": \"Bearer\",\n        \"expires_at\": \"2026-09-29 10:00:00\",\n        \"user\": \"admin\"\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Mahasiswa",
+            "item": [
+                {
+                    "name": "Daftar mahasiswa",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/mahasiswa?search=",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "mahasiswa"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Detail mahasiswa",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/mahasiswa/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "mahasiswa",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Tambah mahasiswa",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nim\": \"2601001\",\n    \"nama\": \"Fitri Handayani\",\n    \"prodi_id\": 1,\n    \"status\": \"aktif\",\n    \"alamat\": \"Jl. Semarang No. 9, Jember\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/mahasiswa",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "mahasiswa"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Ubah mahasiswa",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nim\": \"2601001\",\n    \"nama\": \"Fitri Handayani Sari\",\n    \"prodi_id\": 2,\n    \"status\": \"aktif\",\n    \"alamat\": \"Jl. Semarang No. 9, Jember\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/mahasiswa/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "mahasiswa",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Hapus mahasiswa",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/mahasiswa/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "mahasiswa",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Prodi",
+            "item": [
+                {
+                    "name": "Daftar prodi",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/prodi",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "prodi"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Tambah prodi",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"kode\": \"SI-04\",\n    \"nama\": \"Sistem Informasi\",\n    \"ka_prodi\": \"Dr. Rina, M.Kom.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/prodi",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "prodi"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Hapus prodi",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/prodi/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "prodi",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Matakuliah",
+            "item": [
+                {
+                    "name": "Daftar matakuliah",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/matakuliah",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "matakuliah"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Tambah matakuliah",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"kode\": \"TIF330805\",\n    \"nama\": \"Web Server\",\n    \"sks\": 3\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/matakuliah",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "matakuliah"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost/si-akademik/public"
+        },
+        {
+            "key": "auth_token",
+            "value": ""
+        }
+    ]
+}

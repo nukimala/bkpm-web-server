@@ -1,0 +1,27 @@
+# Folder file kerja laporan sementara (sesuai permintaan)
+laporan/lain ain/
+
+# File temporary & lock Microsoft Word
+~$*.docx
+*.tmp
+
+# Sistem Operasi
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Konfigurasi & Kredensial Sensitif (BKPM Acara 11)
+.env
+
+# Package & Dependency Manager (BKPM Acara 11)
+/vendor/
+/node_modules/
+
+# File Log Runtime
+*.log
+*/logs/*.log
