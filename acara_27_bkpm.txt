@@ -1,0 +1,81 @@
+--- Page 1 ---
+BKPM - WORKSHOP SI WEB SERVER (TIF330805)
+164
+
+Acara 27
+Pokok Bahasan : Integrasi backend-frontend
+Acara Praktikum/Praktik : Minggu 14 / Pertemuan 1
+Tempat : Politeknik Negeri Jember
+Alokasi Waktu : 2 x 170 Menit
+
+a. Capaian Pembelajaran Mata Kuliah (CPMK)
+• Mahasiswa mampu mengembangkan fitur dinamis pada sistem backend web yang terintegrasi dengan frontend menggunakan Bootstrap, serta mendukung integrasi modul CMS seperti autentikasi, manajemen konten, dan pengelolaan basis data.
+
+b. Penilaian Bertahap BNSP ( Skill Passport )
+Skema Sertifikasi : Pengembang Web/Web Developer (SKM-496-028)
+No  Kode Unit         Nama Unit Kompetensi                       Elemen Kompetensi
+1   J.620100.036.01   Melaksanakan pengujian kode program statis  Mempersiapkan dokumentasi, driver test, uji, ukur performa
+2   J.620100.044.01   Menerapkan Alert Notification              Analisis masalah, mekanisme notifikasi, graceful failure
+3   J.620100.045.01   Melakukan Pemantauan Resource              Analisis resources kritikal, visualisasi
+4   J.620100.047.01   Melakukan Pembaharuan Perangkat Lunak      Analisis diferensiasi, program penambahan diferensiasi
+
+c. Indikator Penilaian
+• Ketepatan dalam mengintegrasikan backend dan frontend pada studi kasus dengan tema smart village / sistem informasi akademik.
+
+d. Dasar Teori
+FormData untuk Pengiriman Data Multipart
+Antarmuka FormData memungkinkan penyusunan sekumpulan pasangan key-value, termasuk berkas, untuk dikirim menggunakan fetch() dengan format yang sama seperti pengiriman form HTML biasa (multipart/form-data). Berdasarkan dokumentasi resmi MDN, ketika mengirim FormData melalui fetch(), header Content-Type sebaiknya tidak diatur secara manual, karena browser perlu menyertakan boundary delimiter secara otomatis untuk memisahkan setiap field data di dalam body request; mengatur header ini secara manual justru dapat menyebabkan proses upload berkas gagal diproses oleh server.
+
+Sinkronisasi Operasi CRUD pada Frontend dengan Endpoint API
+Pada frontend berbasis JavaScript murni, operasi Update dan Delete umumnya dilakukan dengan mengirim method PUT/DELETE melalui opsi method pada fetch(), disertai penyertaan id data pada query string dan token autentikasi pada header Authorization, sebagaimana pola yang telah dirancang sejak acara 20.
+
+e. Alat dan Bahan
+• Client Server: XAMPP / Laragon, PHP, MySQL
+• Text Editor: Visual Studio Code
+• Management Storage: Git dan Github
+• Web Browser
+
+f. Prosedur Kerja
+Dashboard admin (View) dari acara 25-26 dilengkapi form Create, Update, dan Delete yang terhubung penuh ke MahasiswaController melalui Router.
+
+Langkah 1 — Membuat View Tambah Data (form_tambah.html)
+Form ini menggunakan FormData sebagaimana diperkenalkan pada acara 26, kini dilengkapi header Authorization.
+
+Langkah 2 — Membuat View Edit Data (form_edit.html)
+async function muatDataUntukEdit(id) {
+    const res = await fetch(`${BASE_URL}/mahasiswa?id=${id}`);
+    const hasil = await res.json();
+    nim.value = hasil.data.nim;
+    nama.value = hasil.data.nama;
+    prodi.value = hasil.data.prodi;
+}
+async function simpanPerubahan(id) {
+    const formData = new FormData();
+    formData.append('nim', nim.value);
+    formData.append('nama', nama.value);
+    formData.append('prodi', prodi.value);
+    await fetch(`${BASE_URL}/mahasiswa?id=${id}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+        body: formData,
+    });
+}
+
+Langkah 3 — Menambahkan Tombol Hapus pada Tabel Dashboard
+async function hapusData(id) {
+    if (!confirm('Hapus data ini?')) return;
+    await fetch(`${BASE_URL}/mahasiswa?id=${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+    });
+    muatDataMahasiswa();
+}
+
+Langkah 4 — Pengujian Alur CRUD Penuh dari Sisi View
+1. Login sebagai admin, tambahkan data mahasiswa baru lengkap dengan foto melalui form_tambah.html.
+2. Ubah salah satu data melalui form_edit.html, verifikasi perubahan tampil pada dashboard tanpa reload penuh.
+3. Hapus salah satu data melalui tombol hapus, verifikasi data hilang dari tabel dan dari basis data.
+
+Tugas Praktik Mandiri
+1. Tambahkan notifikasi visual setiap kali operasi Create/Update/Delete berhasil maupun gagal.
+2. Tambahkan validasi sisi View (field wajib diisi) sebelum data dikirim ke Controller, sebagai lapisan tambahan di luar validasi Model.
