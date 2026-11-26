@@ -1,0 +1,8 @@
+# Matikan mesin PHP di folder uploads untuk mencegah eksekusi skrip berbahaya
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|php8|phps)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Matikan eksekusi CGI dan directory listing
+Options -ExecCGI -Indexes

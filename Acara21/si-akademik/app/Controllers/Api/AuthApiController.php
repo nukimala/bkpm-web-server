@@ -11,7 +11,6 @@ class AuthApiController
     // POST /api/auth/login
     public function login(): void
     {
-        file_put_contents('C:\laragon\www\webserver\Acara20\si-akademik\app\logs\debug_login.log', "RAW: " . file_get_contents('php://input') . "\nCT: " . ($_SERVER['CONTENT_TYPE'] ?? 'none') . "\nCL: " . ($_SERVER['CONTENT_LENGTH'] ?? 'none') . "\n", FILE_APPEND);
         $data = ApiRouter::input();
         $username = trim($data['username'] ?? '');
         $password = $data['password'] ?? '';

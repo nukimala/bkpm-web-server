@@ -1,0 +1,102 @@
+{
+  "info": {
+    "name": "SI-Kepegawaian API Collection",
+    "description": "Koleksi API Praktikum BKPM Acara 15 - 27 (Kepegawaian)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/webserver/si-kepegawaian/public",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check (Ping)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/ping",
+          "host": ["{{base_url}}"],
+          "path": ["api", "ping"]
+        }
+      }
+    },
+    {
+      "name": "2. Get All Pegawai",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/pegawai",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pegawai"]
+        }
+      }
+    },
+    {
+      "name": "3. Get Detail Pegawai",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/pegawai/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pegawai", "1"]
+        }
+      }
+    },
+    {
+      "name": "4. Create Pegawai",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nip\": \"199607122021021004\",\n  \"nama\": \"Dewi Lestari, S.E.\",\n  \"jabatan\": \"Bendahara Keuangan\",\n  \"email\": \"dewi.lestari@kantor.go.id\",\n  \"no_hp\": \"081399887766\",\n  \"alamat\": \"Jl. Asia Afrika No. 10\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/pegawai",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pegawai"]
+        }
+      }
+    },
+    {
+      "name": "5. Update Pegawai",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nip\": \"199607122021021004\",\n  \"nama\": \"Dewi Lestari, S.E., M.Ak.\",\n  \"jabatan\": \"Kepala Bagian Keuangan\",\n  \"email\": \"dewi.lestari@kantor.go.id\",\n  \"no_hp\": \"081399887766\",\n  \"alamat\": \"Jl. Asia Afrika No. 10\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/pegawai/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pegawai", "1"]
+        }
+      }
+    },
+    {
+      "name": "6. Delete Pegawai",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{base_url}}/api/pegawai/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "pegawai", "1"]
+        }
+      }
+    }
+  ]
+}

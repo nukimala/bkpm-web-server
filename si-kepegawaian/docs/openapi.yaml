@@ -1,0 +1,102 @@
+openapi: 3.0.3
+info:
+  title: SI-Kepegawaian RESTful API
+  description: Dokumentasi Spesifikasi OpenAPI untuk Praktikum BKPM Acara 22
+  version: 1.0.0
+
+servers:
+  - url: http://localhost/webserver/si-kepegawaian/public
+    description: Server Lokal Laragon
+
+paths:
+  /api/ping:
+    get:
+      summary: Health check server API
+      responses:
+        '200':
+          description: Server berjalan normal
+
+  /api/pegawai:
+    get:
+      summary: Mengambil semua data pegawai
+      responses:
+        '200':
+          description: Daftar seluruh pegawai berhasil ditarik
+    post:
+      summary: Menambahkan pegawai baru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PegawaiInput'
+      responses:
+        '201':
+          description: Pegawai berhasil dibuat
+        '400':
+          description: Validasi input gagal atau data sudah ada
+
+  /api/pegawai/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID unik pegawai
+    get:
+      summary: Mengambil detail 1 pegawai
+      responses:
+        '200':
+          description: Detail pegawai ditemukan
+        '404':
+          description: Pegawai tidak ditemukan
+    put:
+      summary: Memperbarui data pegawai
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PegawaiInput'
+      responses:
+        '200':
+          description: Data pegawai berhasil diperbarui
+        '404':
+          description: Pegawai tidak ditemukan
+    delete:
+      summary: Menghapus data pegawai
+      responses:
+        '200':
+          description: Pegawai berhasil dihapus
+        '404':
+          description: Pegawai tidak ditemukan
+
+components:
+  schemas:
+    PegawaiInput:
+      type: object
+      required:
+        - nip
+        - nama
+        - jabatan
+        - email
+      properties:
+        nip:
+          type: string
+          example: "199607122021021004"
+        nama:
+          type: string
+          example: "Dewi Lestari, S.E."
+        jabatan:
+          type: string
+          example: "Bendahara Keuangan"
+        email:
+          type: string
+          example: "dewi.lestari@kantor.go.id"
+        no_hp:
+          type: string
+          example: "081399887766"
+        alamat:
+          type: string
+          example: "Jl. Asia Afrika No. 10"

@@ -1,3 +1,6 @@
 RewriteEngine On
-# Semua request diarahkan ke index.php (front controller)
+# Jangan rewrite jika file atau direktori fisik memang ada (HTML, JS, CSS, uploads)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# Semua request lainnya diarahkan ke index.php (front controller)
 RewriteRule ^ index.php [L]

@@ -20,8 +20,19 @@ if (empty($requesturi)) {
 }
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
+//publik cek
 Router::get('/', 'TestController', 'welcome');
 Router::get('/api/ping', 'TestController', 'ping');
+//auth
+Router::post('/api/auth/login', 'AuthController', 'login');
+Router::get('/api/auth/me', 'AuthController', 'me', [['Auth', 'requireAuth']]);
+//pegawai
+Router::get('/api/pegawai', 'PegawaiController', 'index', [['Auth', 'requireAuth']]);
+Router::get('/api/pegawai/{id}', 'PegawaiController', 'show', [['Auth', 'requireAuth']]);
+//hr
+Router::post('/api/pegawai', 'PegawaiController', 'store', [['Auth', 'requireAdmin']]);
+Router::put('/api/pegawai/{id}', 'PegawaiController', 'update', [['Auth', 'requireAdmin']]);
+Router::delete('/api/pegawai/{id}', 'PegawaiController', 'delete', [['Auth', 'requireAdmin']]);
 
 class TestController {
     public function welcome() {

@@ -47,7 +47,7 @@ class MahasiswaService
         }
 
         // Validasi signature gambar nyata (mencegah pemalsuan ekstensi skrip)
-        $imageType = @exif_imagetype($file['tmp_name']);
+        $imageType = function_exists('exif_imagetype') ? @exif_imagetype($file['tmp_name']) : false;
         if (!$imageType && !@getimagesize($file['tmp_name'])) {
             return ['ok' => false, 'error' => 'Berkas bukan gambar yang valid (signature rusak).'];
         }
